@@ -41,7 +41,7 @@ class DataLoader():
         self.seq_length = seq_length
 
         # Validation arguments
-        self.val_fraction = 0.
+        self.val_fraction = 0.2
 
         # Define the path in which the process data would be stored
         data_file = os.path.join(self.data_dir, "trajectories.cpkl")

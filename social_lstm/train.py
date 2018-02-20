@@ -30,15 +30,15 @@ def main():
     parser.add_argument('--batch_size', type=int, default=8,
                         help='minibatch size')
     # Length of sequence to be considered parameter
-    parser.add_argument('--seq_length', type=int, default=20,
+    parser.add_argument('--seq_length', type=int, default=10,
                         help='RNN sequence length')
-    parser.add_argument('--pred_length', type=int, default=12,
+    parser.add_argument('--pred_length', type=int, default=5,
                         help='prediction length')
     # Number of epochs parameter
     parser.add_argument('--num_epochs', type=int, default=1000,
                         help='number of epochs')
     # Frequency at which the model should be saved parameter
-    parser.add_argument('--save_every', type=int, default=400,
+    dparser.add_argument('--save_every', type=int, default=400,
                         help='save frequency')
     # TODO: (resolve) Clipping gradients for now. No idea whether we should
     # Gradient value at which it should be clipped
@@ -52,7 +52,7 @@ def main():
                         help='decay rate for rmsprop')
     # Dropout not implemented.
     # Dropout probability parameter
-    parser.add_argument('--dropout', type=float, default=0.5,
+    parser.add_argument('--dropout', type=float, default=0.,
                         help='dropout probability')
     # Dimension of the embeddings parameter
     parser.add_argument('--embedding_size', type=int, default=64,
@@ -77,8 +77,8 @@ def main():
 
 
 def train(args):
-    # datasets = [i for i in range(5)]
-    datasets = [1, 2, 3]
+    datasets = [i for i in range(5)]
+    # datasets = [1, 2, 3]
     # Remove the leave out dataset from the datasets
     datasets.remove(args.leaveDataset)
 
@@ -138,7 +138,9 @@ def train(args):
             stgraph.readGraph(x)
 
             loss_batch = 0
-
+            # Zero out gradients
+            net.zero_grad()
+            optimizer.zero_grad()
             # For each sequence
             for sequence in range(dataloader.batch_size):
                 # Get the data corresponding to the current sequence
@@ -168,10 +170,6 @@ def train(args):
                 if args.use_cuda:                    
                     cell_states = cell_states.cuda()
 
-                # Zero out gradients
-                net.zero_grad()
-                optimizer.zero_grad()
-
                 # Forward prop
                 outputs, _, _ = net(nodes[:-1], grid_seq[:-1], nodesPresent[:-1], hidden_states, cell_states)
 
@@ -182,11 +180,11 @@ def train(args):
                 # Compute gradients
                 loss.backward()
 
-                # Clip gradients
-                torch.nn.utils.clip_grad_norm(net.parameters(), args.grad_clip)
+            # Clip gradients
+            torch.nn.utils.clip_grad_norm(net.parameters(), args.grad_clip)
 
-                # Update parameters
-                optimizer.step()
+            # Update parameters
+            optimizer.step()
 
             # Reset stgraph
             stgraph.reset()

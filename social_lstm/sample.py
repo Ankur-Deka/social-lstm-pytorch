@@ -48,8 +48,8 @@ def main():
     sample_args = parser.parse_args()
 
     # Save directory
-    save_directory = 'save/' + str(sample_args.test_dataset) + '/'
-    # save_directory = 'save/3/'
+    # save_directory = 'save/' + str(sample_args.test_dataset) + '/'
+    save_directory = 'save/3/'
 
     # Define the path for the config file for saved args
     with open(os.path.join(save_directory, 'config.pkl'), 'rb') as f:
